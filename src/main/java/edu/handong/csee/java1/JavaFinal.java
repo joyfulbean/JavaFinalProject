@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,14 +44,17 @@ import edu.handong.csee.java2.Report2;
 import edu.handong.csee.java3.DifferentColumException;
 import edu.handong.csee.java3.GenQueue;
 
-public class JavaFinal {
+public class JavaFinal{
 	String input;
 	String output;
 	boolean help;
 	ArrayList<String> errorvalue = new ArrayList<String>();
 	
 	public void run(String[] args) throws IOException {
-		
+		//using thread
+		Thread threads = new Zip();
+		threads.start();
+				
 		//CLI Commons
 		Options options = createOptions();
 		
@@ -66,14 +71,17 @@ public class JavaFinal {
 		
 		//store the list of zip file and file
 		String[] nameofzipfile = new String[a.listFiles().length];
+		
 		//store the data
 		//ArrayList<String> value = new ArrayList<String>();
 		GenQueue<String> value;
 		value = new GenQueue<String>();
-		ArrayList<String> value2 = new ArrayList<String>();
+		GenQueue<String> value2 = new GenQueue<String>();
 		//Queue<String> errorvalue = new LinkedList<String>();
 		
-		//acess the zip file
+		Zip readzip = new Zip();
+		
+		//access the zip file
 		//list the all files and call the function to store the each lines by types to read
 		int numdr = 0;
 		int o = 0;
@@ -85,34 +93,28 @@ public class JavaFinal {
 				 ZipFile zipFile = new ZipFile(nameofzipfile[o], "MS949");
 				 
 				 Enumeration<? extends ZipArchiveEntry> entries = zipFile.getEntries();
+			
 		          while(entries.hasMoreElements()){
 		             ZipArchiveEntry entry = entries.nextElement();
 		             if(entry.isDirectory()){
 					    } 
+		             
 		             else {
 		            	 if(entry.getName().contains("(요약문)")) {
-		            		 String zip = nameofzipfile[o];
-		            		 InputStream stream = zipFile.getInputStream(entry);
-		            		 for(String values:getData(stream,zip)) {
-		            			 value.enqueue(values);
-		            			 //value.add(values);
-		            			 //System.out.println(values);
-		            		 }
+		            		 value = readzip.readData(nameofzipfile[o], zipFile, entry);
+
 		            	 }
 		            	else if(entry.getName().contains("(표.그림)")) {
-		            		 String zip = nameofzipfile[o];
-		            		InputStream stream = zipFile.getInputStream(entry);
-		            		 for(String values:getData2(stream, zip)) {
-		            			 value2.add(values);
-		            			//System.out.println(values);
-		            		 }
+		            		 value2 = readzip.readData2(nameofzipfile[o], zipFile, entry);
+		            		}
 		            	}
-		            	}
+		             
 				     }
 		          zipFile.close();
 		          o++;
 		        }  
 			}
+		
 		
 	String output1 = output+"output1.csv";
 	String output2 = output+"output2.csv";
@@ -140,7 +142,7 @@ public class JavaFinal {
 					while (value.hasItems()) {
 				         String strings = value.dequeue();
 				         csvPrinter.printRecord(strings);
-				         System.out.println(strings);
+				         //System.out.println(strings);
 				      }
 				}
 	            	csvPrinter.flush();            	
@@ -159,9 +161,11 @@ public class JavaFinal {
 	                    .withHeader("ID", "Title", "ID_Number", "Type","Explanation","Num"));
 	            
 	            ){
-				for (String strings : value2) {
-	            csvPrinter.printRecord(strings);
-				}
+				while (value.hasItems()) {
+			         String strings = value2.dequeue();
+			         csvPrinter.printRecord(strings);
+			         //System.out.println(strings);
+			      }
 	            csvPrinter.flush();            
 	            }
 			
@@ -184,151 +188,6 @@ public class JavaFinal {
 			}
 		}
 				
-
-		
-		//인자로 번호 같이 전달해서, 앞에서붙이기?
-	public ArrayList<String> getData2(InputStream is, String nameofzipfile) throws IOException{
-		//define the field
-		ArrayList<String> result = new ArrayList<String>();
-		XSSFSheet sheet= null;
-		XSSFRow row = null;
-		XSSFCell cell = null;
-				
-		// read the workbook
-		XSSFWorkbook wb = new XSSFWorkbook(is);
-		sheet = wb.getSheetAt(0);
-
-		// number of rows in the sheet
-		int rows = ((XSSFSheet) sheet).getPhysicalNumberOfRows();
-		try {	    
-		String line = "";
-		String temp = "";
-		Report2 report = new Report2();
-			
-		//for loops until the end of rows 
-		for (int r = 1; r < rows; r++) {
-			row = ((XSSFSheet) sheet).getRow(r);
-			if (row != null) { 
-				//System.out.println(row.getLastCellNum());
-	            if(row.getLastCellNum() != 5) {
-	    			throw new DifferentColumException();
-	    		}
-	            int cells = row.getPhysicalNumberOfCells();
-	            for (int c = 0; c < cells; c++) {
-	                cell  = row.getCell(c);
-	                if(cell == null) {
-	                  temp = "";
-	                }
-	                else if(CellType.STRING == cell.getCellType()) {
-	                  temp = (((org.apache.poi.ss.usermodel.Cell) cell).getStringCellValue());
-	                }
-	                else if(CellType.NUMERIC == cell.getCellType()){
-	                  temp = Double.toString(((org.apache.poi.ss.usermodel.Cell) cell).getNumericCellValue());
-	                }
-	                if(c == 0){
-	                   report.setTitle(temp);    	
-	                }
-	                else if(c == 1) {
-	                	report.setIdnumber(temp);    	
-	                }
-	                else if(c == 2) {
-	                	report.setType(temp);    	
-	                }
-	                else if(c == 3) {
-	                	report.setExplanation(temp);    	
-	                }
-	                else if(c == 4) {
-	                	report.setNum(temp);    	
-	                }   
-	             }
-	                 line = nameofzipfile+","+report.getTitle() +","+ report.getIdnumber()+","+report.getType()+"," + report.getExplanation()+"," + report.getNum();
-			}
-			//System.out.println(line);
-         	result.add(line);
-			    }
-		}
-		catch(DifferentColumException e) {
-			  System.out.println(e.getMessage());
-			  errorvalue.add(nameofzipfile+"-type2");
-			  //System.out.println(errorvalue);
-		}
-		return result;
-	}
-		
-public ArrayList<String> getData(InputStream is, String nameofzipfile) throws IOException{
-	//define the field
-	ArrayList<String> result = new ArrayList<String>();
-	XSSFSheet sheet= null;
-	XSSFRow row = null;
-	XSSFCell cell = null;
-			
-	// read the workbook
-	XSSFWorkbook wb = new XSSFWorkbook(is);
-	sheet = wb.getSheetAt(0);
-
-	// number of rows in the sheet
-	int rows = ((XSSFSheet) sheet).getPhysicalNumberOfRows();
-	System.out.println(rows);
-	String line = "";
-	String temp = "";
-	Report1 report = new Report1();
-	try {	 
-	//for loops until the end of rows 
-	for (int r = 1; r < rows; r++) {
-		row = ((XSSFSheet) sheet).getRow(r);
-		if (row != null) { 
-			System.out.println(row.getLastCellNum());
-            if(row.getLastCellNum() != 7) {
-    			throw new DifferentColumException();
-    		}
-            int cells = row.getPhysicalNumberOfCells();
-            for (int c = 0; c < cells; c++) {
-                cell  = row.getCell(c);
-                if(cell == null) {
-                  temp = "";
-                }
-                else if(CellType.STRING == cell.getCellType()) {
-                  temp = (((org.apache.poi.ss.usermodel.Cell) cell).getStringCellValue());
-                }
-                else if(CellType.NUMERIC == cell.getCellType()){
-                  temp = Double.toString(((org.apache.poi.ss.usermodel.Cell) cell).getNumericCellValue());
-                }
-                if(c == 0){
-                   report.setTopic(temp);    	
-                }
-                else if(c == 1) {
-                	report.setSummary(temp);    	
-                }
-                else if(c == 2) {
-                	report.setKeyword(temp);    	
-                }
-                else if(c == 3) {
-                	report.setDate(temp);    	
-                }
-                else if(c == 4) {
-                	report.setReference(temp);    	
-                }
-                else if(c == 5) {
-                	report.setOrigin(temp);    	
-                }
-                else if(c == 6) {
-                	report.setCopyright(temp);    	
-                }        
-             }
-                 line = nameofzipfile+","+report.getTopic() +","+ report.getSummary()+","+report.getKeyword()+"," + report.getDate()+"," + report.getReference()+"," + report.getOrigin()+"," + report.getCopyright();
-		}
-		//System.out.println(line);
-     	result.add(line);
-		    }
-	}
-			catch(DifferentColumException e) {
-				System.out.println(e.getMessage());
-				errorvalue.add(nameofzipfile+"-type1");
-				System.out.println(errorvalue);
-			}
-			return result;
-		}
-
 	
 
 private boolean parseOptions(Options options, String[] args) {

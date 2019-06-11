@@ -2,6 +2,7 @@ package edu.handong.csee.java3;
 
 import java.util.LinkedList;
 
+//Customized Generics
 public class GenQueue<String> {
 	 private LinkedList<String> list = new LinkedList<String>();
 	   public void enqueue(String item) {
