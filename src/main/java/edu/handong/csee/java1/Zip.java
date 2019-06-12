@@ -29,7 +29,6 @@ public GenQueue<String> readData(String nameofzipfile, ZipFile zipFile,ZipArchiv
        		 InputStream stream = zipFile.getInputStream(entry);
        		 for(String values:getData(stream,zip)) {
        			 value.enqueue(values);
-       			 System.out.println(values);
        		 }
        		 return value;
 }
@@ -42,7 +41,6 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
   		InputStream stream = zipFile.getInputStream(entry);
   		 for(String values:getData2(stream, zip)) {
   			value2.enqueue(values);
-  			//System.out.println(values);
   		 }
   		return value2;
 
@@ -112,7 +110,6 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
     	             }
     	                 line = nameofzipfile+","+report.getTopic() +","+ report.getSummary()+","+report.getKeyword()+"," + report.getDate()+"," + report.getReference()+"," + report.getOrigin()+"," + report.getCopyright();
     			}
-    			//System.out.println(line);
     	     	result.add(line);
     			    }
     		}
@@ -181,14 +178,12 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
 	             }
 	                 line = nameofzipfile+","+report.getTitle() +","+ report.getIdnumber()+","+report.getType()+"," + report.getExplanation()+"," + report.getNum();
 			}
-			//System.out.println(line);
       	result.add(line);
 			    }
 		}
 		catch(DifferentColumException e) {
 			  System.out.println(e.getMessage());
 			  errorvalue.add(nameofzipfile+"-type2");
-			  //System.out.println(errorvalue);
 		}
 		return result;
 	}

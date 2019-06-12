@@ -64,7 +64,7 @@ public class JavaFinal{
 				return;
 			}
 		// path is required (necessary) data so no need to have a branch.
-		System.out.println("You provided \"" + input + "\" as the value of the option p");
+		System.out.println("You provided \"" + input + "\" as the value of the option i");
 		
 		//input the cli
 		File a = new File(input);
@@ -73,17 +73,15 @@ public class JavaFinal{
 		String[] nameofzipfile = new String[a.listFiles().length];
 		
 		//store the data
-		//ArrayList<String> value = new ArrayList<String>();
 		GenQueue<String> value;
 		value = new GenQueue<String>();
 		GenQueue<String> value2 = new GenQueue<String>();
-		//Queue<String> errorvalue = new LinkedList<String>();
 		
 		Zip readzip = new Zip();
 		
 		//access the zip file
 		//list the all files and call the function to store the each lines by types to read
-		int numdr = 0;
+
 		int o = 0;
 		for(File file: a.listFiles()) {
 			 if(file.isFile()) {
@@ -114,13 +112,14 @@ public class JavaFinal{
 		          o++;
 		        }  
 			}
-		
+	
+	// path is required (necessary) data so no need to have a branch.
+		System.out.println("You provided \"" + output + "\" as the value of the option o");
+					
 		
 	String output1 = output+"output1.csv";
 	String output2 = output+"output2.csv";
 	String output3 = output+"error.csv";
-	
-	//System.out.println(output1);
 		
 			// print the output1.csv
 			try (
@@ -132,17 +131,11 @@ public class JavaFinal{
 	                    .withHeader("ID", "Topic", "Summary", "Keyword","Date","Reference","Origin","CopyRight"));
 	            
 	            ){
-				/*
-				//System.out.println(output1);
-				for (String strings : value) {
-					csvPrinter.printRecord(strings);
-					//System.out.println(strings);
-				}*/
 				{
 					while (value.hasItems()) {
 				         String strings = value.dequeue();
 				         csvPrinter.printRecord(strings);
-				         //System.out.println(strings);
+				         System.out.println(strings);
 				      }
 				}
 	            	csvPrinter.flush();            	
@@ -155,16 +148,14 @@ public class JavaFinal{
 			try (
 					FileOutputStream outputStream = new FileOutputStream(output2);
 			       BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-	            //BufferedWriter writer = Files.newBufferedWriter(Paths.get(output1),Charset.forName("EUC-KR"));
-
+	            
 	            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
 	                    .withHeader("ID", "Title", "ID_Number", "Type","Explanation","Num"));
 	            
 	            ){
-				while (value.hasItems()) {
+				while (value2.hasItems()) {
 			         String strings = value2.dequeue();
 			         csvPrinter.printRecord(strings);
-			         //System.out.println(strings);
 			      }
 	            csvPrinter.flush();            
 	            }
@@ -173,8 +164,7 @@ public class JavaFinal{
 			try (
 					FileOutputStream outputStream = new FileOutputStream(output3);
 			       BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-	            //BufferedWriter writer = Files.newBufferedWriter(Paths.get(output1),Charset.forName("EUC-KR"));
-
+	            
 	            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
 	                    .withHeader("Error_ZipFileName"));
 	            
