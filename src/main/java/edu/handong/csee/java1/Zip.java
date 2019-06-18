@@ -61,7 +61,6 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
 
     		// number of rows in the sheet
     		int rows = ((XSSFSheet) sheet).getPhysicalNumberOfRows();
-    		System.out.println(rows);
     		String line = "";
     		String temp = "";
     		Report1 report = new Report1();
@@ -70,8 +69,7 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
     		for (int r = 1; r < rows; r++) {
     			row = ((XSSFSheet) sheet).getRow(r);
     			if (row != null) { 
-    				System.out.println(row.getLastCellNum());
-    	            if(row.getLastCellNum() != 7) {
+    	            if(row.getLastCellNum() > 7) {
     	    			throw new DifferentColumException();
     	    		}
     	            int cells = row.getPhysicalNumberOfCells();
@@ -116,7 +114,6 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
     				catch(DifferentColumException e) {
     					System.out.println(e.getMessage());
     					errorvalue.add(nameofzipfile+"-type1");
-    					System.out.println(errorvalue);
     				}
     				return result;
     			}
@@ -145,7 +142,7 @@ public GenQueue<String> readData2(String nameofzipfile, ZipFile zipFile,ZipArchi
 			row = ((XSSFSheet) sheet).getRow(r);
 			if (row != null) { 
 				//System.out.println(row.getLastCellNum());
-	            if(row.getLastCellNum() != 5) {
+	            if(row.getLastCellNum() > 5) {
 	    			throw new DifferentColumException();
 	    		}
 	            int cells = row.getPhysicalNumberOfCells();

@@ -48,4 +48,7 @@ compile group: 'org.apache.poi', name: 'poi', version: '3.17'
 	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-compress
 	compile group: 'org.apache.commons', name: 'commons-compress', version: '1.18'
+	
+	apply plugin: 'application'
+	mainClassName = "edu.handong.csee.java1.Main"
 }

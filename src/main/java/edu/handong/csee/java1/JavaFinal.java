@@ -86,7 +86,6 @@ public class JavaFinal{
 		for(File file: a.listFiles()) {
 			 if(file.isFile()) {
 				 nameofzipfile[o] = (file.getAbsolutePath());
-				 System.out.println(nameofzipfile[o]);
 				 
 				 ZipFile zipFile = new ZipFile(nameofzipfile[o], "MS949");
 				 
@@ -135,7 +134,7 @@ public class JavaFinal{
 					while (value.hasItems()) {
 				         String strings = value.dequeue();
 				         csvPrinter.printRecord(strings);
-				         System.out.println(strings);
+				         
 				      }
 				}
 	            	csvPrinter.flush();            	
